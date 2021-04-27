@@ -53,6 +53,7 @@ DWORD getProcessID(LPCTSTR procName)
     if (snapHandle != INVALID_HANDLE_VALUE) {
         CloseHandle(snapHandle);
     }
+    return 0;
 }
 
 BOOL setPrivilege(HANDLE hToken, LPCTSTR szPrivName, BOOL fEnable) 
@@ -65,45 +66,56 @@ BOOL setPrivilege(HANDLE hToken, LPCTSTR szPrivName, BOOL fEnable)
     return((GetLastError() == ERROR_SUCCESS));
 }
 
-DWORD lab2_injection(DWORD procID, LPCWSTR dllname)
+HANDLE lab2_injection(DWORD procID, LPCWSTR dllname)
 {
     HANDLE hCurrentProc = GetCurrentProcess();
     HANDLE hToken = NULL;
-    
+    LPVOID dll_name = NULL;
+    HANDLE processHandel = NULL;
+    DWORD dwWritten = 0;
+    LPVOID load_library = NULL;
+    DWORD ThreadID = 0;
+    HANDLE hThread = NULL;
     if (!OpenProcessToken(hCurrentProc, TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES, &hToken))
     {
         LAB2_PRINTF("OpenProcessToken Error 0x%x!", GetLastError());
-        return 0;
+        goto clean;
     }
     else 
     {
         if (!setPrivilege(hToken, SE_DEBUG_NAME, TRUE)) 
         {
             LAB2_PRINTF("SetPrivlegesSE_DEBUG_NAME 0x%x", GetLastError());
-            return 0;
+            goto clean;
         }
     }
-    HANDLE processHandel = OpenProcess(PROCESS_ALL_ACCESS, false, procID);
-    LPVOID dll_name = VirtualAllocEx(processHandel, NULL, MAX_PATH * sizeof(TCHAR), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-   
-    DWORD dwWritten;
+    processHandel = OpenProcess(PROCESS_ALL_ACCESS, false, procID);
+    dll_name = VirtualAllocEx(processHandel, NULL, MAX_PATH * sizeof(TCHAR), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     if (WriteProcessMemory(processHandel, dll_name, dllname, (lstrlen(dllname)+1)*sizeof(TCHAR), &dwWritten) == 0) {
         LAB2_PRINTF("WriteProcessMemory error Ox%x", GetLastError());
-        return 0; 
+        goto clean;
     }
 #ifdef UNICODE
-    LPVOID load_library = GetProcAddress(LoadLibrary(TEXT("kernel32.dll")), "LoadLibraryW");
+    load_library = GetProcAddress(LoadLibrary(TEXT("kernel32.dll")), "LoadLibraryW");
 #else
     LPVOID load_library = GetProcAddress(LoadLibrary(TEXT("kernel32.dll")), "LoadLibraryA");
 #endif
-    DWORD ThreadID;
-    HANDLE hThread = CreateRemoteThread(processHandel, NULL, 0, (LPTHREAD_START_ROUTINE)load_library, dll_name, 0, &ThreadID);
+    hThread = CreateRemoteThread(processHandel, NULL, 0, (LPTHREAD_START_ROUTINE)load_library, dll_name, 0, &ThreadID);
     if (hThread == NULL) 
     {
         LAB2_PRINTF("WriteProcessMemory error Ox%x", GetLastError());
-        return 0;
+        goto clean;
     }
-    return ThreadID;
+clean:
+    if (processHandel != NULL)
+    {
+        CloseHandle(processHandel);
+    }
+    if (hToken != NULL)
+    {
+        CloseHandle(hToken);
+    }
+    return hThread;
 }
     
 void usage()
@@ -113,11 +125,22 @@ void usage()
 
 int main(int argc, char ** argv)
 {
-	if (argc < 2)
+    LPCTSTR proc_name = TEXT("notepad.exe");
+    LPCTSTR dll_name = TEXT("Hook.dll");
+    TCHAR full_dll_path[MAX_PATH];
+    memset(full_dll_path, 0, MAX_PATH);
+    if (GetFullPathName(dll_name, sizeof(full_dll_path) / sizeof(TCHAR), full_dll_path, NULL) == 0)
+    {
+        LAB2_PRINTF("error: unable get full path of %s", dll_name);
+        return 2;
+    }
+	if (argc < 1)
 	{
 		usage();
 		return 1;
 	}
 	LAB2_PRINTF("Starting ... ");
+    
+    lab2_injection(getProcessID(proc_name), full_dll_path);
 	return 0;
 } 
