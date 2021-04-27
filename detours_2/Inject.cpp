@@ -40,6 +40,7 @@ DWORD getProcessID(LPCTSTR procName)
     PROCESSENTRY32 processEntry = { 0 };
     if ((snapHandle = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)) == INVALID_HANDLE_VALUE)
     {
+        LAB2_PRINTF("Error: unable get id of %s", procName);
         return 0;
     }
     processEntry.dwSize = sizeof(PROCESSENTRY32);
@@ -53,7 +54,8 @@ DWORD getProcessID(LPCTSTR procName)
     if (snapHandle != INVALID_HANDLE_VALUE) {
         CloseHandle(snapHandle);
     }
-    return 0;
+    LAB2_PRINTF("Error: cannot find process %s", procName);
+    exit(0);
 }
 
 BOOL setPrivilege(HANDLE hToken, LPCTSTR szPrivName, BOOL fEnable) 
@@ -92,7 +94,7 @@ HANDLE lab2_injection(DWORD procID, LPCWSTR dllname)
     processHandel = OpenProcess(PROCESS_ALL_ACCESS, false, procID);
     dll_name = VirtualAllocEx(processHandel, NULL, MAX_PATH * sizeof(TCHAR), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
     if (WriteProcessMemory(processHandel, dll_name, dllname, (lstrlen(dllname)+1)*sizeof(TCHAR), &dwWritten) == 0) {
-        LAB2_PRINTF("WriteProcessMemory error Ox%x", GetLastError());
+        LAB2_PRINTF("WriteProcessMemory error 0x%x", GetLastError());
         goto clean;
     }
 #ifdef UNICODE
@@ -103,7 +105,7 @@ HANDLE lab2_injection(DWORD procID, LPCWSTR dllname)
     hThread = CreateRemoteThread(processHandel, NULL, 0, (LPTHREAD_START_ROUTINE)load_library, dll_name, 0, &ThreadID);
     if (hThread == NULL) 
     {
-        LAB2_PRINTF("WriteProcessMemory error Ox%x", GetLastError());
+        LAB2_PRINTF("WriteProcessMemory error 0x%x", GetLastError());
         goto clean;
     }
 clean:

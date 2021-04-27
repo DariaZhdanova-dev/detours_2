@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</OutDir>
-    <IntDir>$(SolutionDir)\obj\$(Configuration)_$(Platform)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -104,8 +104,8 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>IF not exist "$(SolutionDir)out\$(Configuration)\" (mkdir "$(SolutionDir)out\$(Configuration)\")
-copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,8 +126,8 @@ copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>IF not exist "$(SolutionDir)out\$(Configuration)\" (mkdir "$(SolutionDir)out\$(Configuration)\")
-copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -144,8 +144,8 @@ copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>IF not exist "$(SolutionDir)out\$(Configuration)\" (mkdir "$(SolutionDir)out\$(Configuration)\")
-copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -166,8 +166,8 @@ copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>IF not exist "$(SolutionDir)out\$(Configuration)\" (mkdir "$(SolutionDir)out\$(Configuration)\")
-copy "$(TargetPath)" "$(SolutionDir)\bin\$(Configuration)\" </Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
